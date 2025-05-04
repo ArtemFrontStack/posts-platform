@@ -1,42 +1,69 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
+@import "tailwindcss";
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: #121212; /* Глубокий черный фон */
+  color: #e0e0e0; /* Светло-серый текст для читаемости */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+  'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+
+  /* Тонкий красный градиент для глубины */
+  background-image:
+          radial-gradient(
+                  circle at 75% 30%,
+                  rgba(255, 40, 40, 0.15) 0%,
+                  transparent 40%
+          ),
+          linear-gradient(
+                  to bottom,
+                  rgba(18, 18, 18, 1) 0%,
+                  rgba(30, 7, 7, 0.9) 100%
+          );
+
+  /* Эффекты текста */
+  text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Параллакс-эффект для фона */
+  background-attachment: fixed;
+  background-size: cover;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+/* Стили выделения текста */
+::selection {
+  background-color: #ff2e2e; /* Ярко-красный */
+  color: #ffffff;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+/* Стили скроллбара */
+::-webkit-scrollbar {
+  width: 10px;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ff2e2e;
+  border-radius: 5px;
+  border: 2px solid #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ff5e5e;
+}
+
+/* Анимация плавного появления */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+body {
+  animation: fadeIn 0.5s ease-out;
 }
