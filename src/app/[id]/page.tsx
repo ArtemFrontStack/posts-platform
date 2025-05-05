@@ -1,12 +1,13 @@
-'use client'
+// src/app/[id]/page.tsx
+'use client';
 
 import { useParams } from 'next/navigation';
-import { mockPosts } from "@/app/data/data";
+import { mockPosts } from '@/app/data/data';
 import styles from './SinglePostPage.module.css';
-import Link from "next/link";
-import { useSession } from "next-auth/react";
-import { useState, useEffect } from "react";
-import { FiArrowLeft, FiMessageSquare, FiSend } from "react-icons/fi";
+import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import { useState, useEffect } from 'react';
+import { FiArrowLeft, FiMessageSquare, FiSend } from 'react-icons/fi';
 
 interface Comment {
     id: number;
@@ -14,6 +15,7 @@ interface Comment {
     author: string;
     createdAt: string;
     avatar?: string;
+    postId: number;
 }
 
 export default function SinglePostPage() {
@@ -26,22 +28,25 @@ export default function SinglePostPage() {
     const id = params?.id;
     const post = mockPosts.find((p) => p.id === Number(id));
 
-    // Load comments from localStorage when component mounts
+    // Получение комментариев из API при монтировании компонента
     useEffect(() => {
         if (id) {
-            const storedComments = localStorage.getItem(`comments_${id}`);
-            if (storedComments) {
-                setComments(JSON.parse(storedComments));
-            }
+            const fetchComments = async () => {
+                try {
+                    const response = await fetch(`/api/posts?postId=${id}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        setComments(data);
+                    } else {
+                        console.error('Не удалось загрузить комментарии');
+                    }
+                } catch (error) {
+                    console.error('Ошибка при загрузке комментариев:', error);
+                }
+            };
+            fetchComments();
         }
     }, [id]);
-
-    // Save comments to localStorage whenever comments change
-    useEffect(() => {
-        if (id && comments.length > 0) {
-            localStorage.setItem(`comments_${id}`, JSON.stringify(comments));
-        }
-    }, [comments, id]);
 
     if (!post) {
         return <div className={styles.notFound}>Пост #{id} не найден</div>;
@@ -51,21 +56,37 @@ export default function SinglePostPage() {
         setCommentText(e.target.value);
     }
 
-    function handleSubmitComment(e: React.FormEvent<HTMLFormElement>) {
+    async function handleSubmitComment(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         if (!commentText.trim()) return;
 
-        const newComment: Comment = {
-            id: Date.now(),
+        const newComment = {
             text: commentText,
-            author: session?.user?.name || "Аноним",
-            createdAt: new Date().toISOString(),
-            avatar: session?.user?.image || "/default-avatar.png"
+            author: session?.user?.name || 'Аноним',
+            avatar: session?.user?.image || '/default-avatar.png',
+            postId: Number(id),
         };
 
-        setComments([...comments, newComment]);
-        setCommentText('');
-        setIsCommenting(false);
+        try {
+            const response = await fetch('/api/posts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newComment),
+            });
+
+            if (response.ok) {
+                const savedComment = await response.json();
+                setComments([...comments, savedComment]);
+                setCommentText('');
+                setIsCommenting(false);
+            } else {
+                console.error('Не удалось отправить комментарий');
+            }
+        } catch (error) {
+            console.error('Ошибка при отправке комментария:', error);
+        }
     }
 
     return (
@@ -110,8 +131,8 @@ export default function SinglePostPage() {
                             <form onSubmit={handleSubmitComment}>
                                 <div className={styles.avatarContainer}>
                                     <img
-                                        src={session.user?.image || "/default-avatar.png"}
-                                        alt={session.user?.name || "User"}
+                                        src={session.user?.image || '/default-avatar.png'}
+                                        alt={session.user?.name || 'User'}
                                         className={styles.avatar}
                                     />
                                 </div>
@@ -120,10 +141,10 @@ export default function SinglePostPage() {
                                         className={styles.commentInput}
                                         value={commentText}
                                         onChange={handleComment}
-                                        placeholder="Ваш комментарий..."
+                                        placeholder='Ваш комментарий...'
                                         autoFocus
                                     />
-                                    <button className={styles.submitButton} type="submit">
+                                    <button className={styles.submitButton} type='submit'>
                                         <FiSend />
                                     </button>
                                 </div>
@@ -132,7 +153,7 @@ export default function SinglePostPage() {
                     </div>
                 ) : (
                     <div className={styles.loginPrompt}>
-                        <Link href="/login" className={styles.loginButton}>
+                        <Link href='/login' className={styles.loginButton}>
                             Войдите, чтобы комментировать
                         </Link>
                     </div>
@@ -153,8 +174,8 @@ export default function SinglePostPage() {
                                     <div>
                                         <span className={styles.commentAuthor}>{comment.author}</span>
                                         <span className={styles.commentDate}>
-                                            {new Date(comment.createdAt).toLocaleString()}
-                                        </span>
+                      {new Date(comment.createdAt).toLocaleString()}
+                    </span>
                                     </div>
                                 </div>
                                 <p className={styles.commentText}>{comment.text}</p>
