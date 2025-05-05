@@ -10,9 +10,11 @@ interface Post {
     body: string;
 }
 
-// Убедитесь, что это серверный компонент (нет 'use client' сверху)
-export default function BlogPage({ searchParams }: { searchParams?: { page?: string } }) {
-    const currentPage = Number(searchParams?.page) || 1;
+// Server component
+export default async function BlogPage({ searchParams }: { searchParams?: Promise<{ page?: string }> }) {
+    // Await searchParams to resolve the Promise
+    const resolvedSearchParams = await searchParams;
+    const currentPage = Number(resolvedSearchParams?.page) || 1;
     const postsPerPage = 5;
     const totalPages = Math.ceil(mockPosts.length / postsPerPage);
 
