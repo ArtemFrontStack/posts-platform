@@ -12,22 +12,25 @@ export default async function AccountMenu() {
         <div className={styles.container}>
             <div className={styles.userContainer}>
                 <div className={styles.avatarSection}>
-                    {session?.user?.image ? (
-                        <Image
-                            src={session.user.image}
-                            alt="User profile"
-                            width={80}
-                            height={80}
-                            className={styles.avatar}
-                            quality={100}
-                            priority
-                        />
-                    ) : (
-                        <div className={styles.placeholderAvatar}>
-                            <FiUser size={32} />
-                        </div>
-                    )}
+                    <Link href={'/account'} tabIndex={0} aria-label="Перейти в профиль">
+                        {session?.user?.image ? (
+                            <Image
+                                src={session.user.image}
+                                alt={session.user.name ? `${session.user.name} profile` : "User profile"}
+                                width={80}
+                                height={80}
+                                className={styles.avatar}
+                                quality={100}
+                                priority
+                            />
+                        ) : (
+                            <div className={styles.placeholderAvatar}>
+                                <FiUser size={32} />
+                            </div>
+                        )}
+                    </Link>
                 </div>
+
                 <div className={styles.nameSection}>
                     <h1 className={styles.userName}>
                         {session?.user?.name || "Гость"}
@@ -40,20 +43,24 @@ export default async function AccountMenu() {
 
             <div className={styles.menuItems}>
                 {!session?.user ? (
-                    <>
-                        <Link href="/login" className={styles.menuButton}>
-                            <FiLogIn className={styles.buttonIcon} />
-                            <span>Войти в систему</span>
-                        </Link>
-                    </>
+                    <Link href="/login" className={styles.menuButton}>
+                        <FiLogIn className={styles.buttonIcon} />
+                        <span>Войти в систему</span>
+                    </Link>
                 ) : (
-                    <>
-                        <div className={styles.signOutButton}>
-                            <SignOutButton />
-                        </div>
-                    </>
+                    <div className={styles.signOutButton}>
+                        <SignOutButton />
+                    </div>
                 )}
             </div>
+
+            {/* Mobile-only login button */}
+            {!session?.user && (
+                <Link href="/login" className={`${styles.menuButtonMobile} md:hidden`} aria-label="Войти">
+                    <span className={styles.menuButton}>войти <FiLogIn /></span>
+
+                </Link>
+            )}
         </div>
     );
 }

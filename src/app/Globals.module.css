@@ -65,3 +65,33 @@
 .Button:hover .icon {
     transform: translateX(3px);
 }
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.paginationButton {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    background-color: #ff2e2e;
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.paginationButton:hover {
+    background-color: #e62626;
+}
+
+.paginationButtonDisabled {
+    background-color: #555;
+    cursor: not-allowed;
+}
+
+.currentPage {
+    color: white;
+    font-weight: 500;
+}

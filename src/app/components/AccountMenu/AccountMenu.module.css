@@ -1,4 +1,3 @@
-/* AccountMenu.module.css */
 .container {
     display: flex;
     flex-direction: column;
@@ -101,6 +100,18 @@
     border-color: #ff2e2e;
 }
 
+.menuButtonMobile {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
 .menuButtonSecondary {
     display: flex;
     justify-content: center;
@@ -123,4 +134,30 @@
     margin-top: 1rem;
     padding-top: 1rem;
     border-top: 1px solid #2a2a2a;
+}
+
+@media (max-width: 900px) {
+    .container {
+        width: auto;
+        padding: 0.5rem;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+    }
+
+    .userContainer > :not(.avatarSection),
+    .menuItems {
+        display: none;
+    }
+
+    .avatar,
+    .placeholderAvatar {
+        width: 3rem !important;
+        height: 3rem !important;
+        border-width: 2px !important;
+    }
+
+    .menuButtonMobile {
+        display: flex;
+    }
 }

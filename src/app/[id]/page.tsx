@@ -1,12 +1,12 @@
 'use client'
 
-import {useParams} from 'next/navigation';
-import {mockPosts} from "@/app/data/data";
+import { useParams } from 'next/navigation';
+import { mockPosts } from "@/app/data/data";
 import styles from './SinglePostPage.module.css';
 import Link from "next/link";
-import {useSession} from "next-auth/react";
-import {useState} from "react";
-import {FiArrowLeft, FiMessageSquare, FiSend} from "react-icons/fi";
+import { useSession } from "next-auth/react";
+import { useState } from "react";
+import { FiArrowLeft, FiMessageSquare, FiSend } from "react-icons/fi";
 
 interface Comment {
     id: number;
@@ -17,13 +17,18 @@ interface Comment {
 }
 
 export default function SinglePostPage() {
-    const {data: session} = useSession();
+    const { data: session } = useSession();
     const params = useParams();
-    const [commentText, setCommentText] = useState('')
+    const [commentText, setCommentText] = useState('');
     const [comments, setComments] = useState<Comment[]>([]);
     const [isCommenting, setIsCommenting] = useState(false);
 
     const id = params?.id;
+    const post = mockPosts.find((p) => p.id === Number(id));
+
+    if (!post) {
+        return <div className={styles.notFound}>Пост #{id} не найден</div>;
+    }
 
     function handleComment(e: React.ChangeEvent<HTMLInputElement>) {
         setCommentText(e.target.value);
@@ -39,23 +44,17 @@ export default function SinglePostPage() {
             author: session?.user?.name || "Аноним",
             createdAt: new Date().toISOString(),
             avatar: session?.user?.image || "/default-avatar.png"
-        }
+        };
 
         setComments([...comments, newComment]);
         setCommentText('');
         setIsCommenting(false);
     }
 
-    const post = mockPosts.find((p) => p.id === Number(id));
-
-    if (!post) {
-        return <div className={styles.notFound}>Пост #{id} не найден</div>;
-    }
-
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <Link href={"/"} className={styles.backButton}>
+                <Link href="/" className={styles.backButton}>
                     <FiArrowLeft size={20} /> Назад
                 </Link>
                 <div className={styles.postMeta}>
@@ -137,12 +136,11 @@ export default function SinglePostPage() {
                                     <div>
                                         <span className={styles.commentAuthor}>{comment.author}</span>
                                         <span className={styles.commentDate}>
-                                            {new Date(comment.createdAt).toLocaleString()}
-                                        </span>
+                      {new Date(comment.createdAt).toLocaleString()}
+                    </span>
                                     </div>
                                 </div>
                                 <p className={styles.commentText}>{comment.text}</p>
-                                <button className={styles.replyButton}>Ответить</button>
                             </div>
                         ))
                     ) : (

@@ -4,6 +4,7 @@ import AccountMenu from "@/app/components/AccountMenu";
 import styles from "./Dashboard.module.css";
 import { FiActivity, FiBookmark, FiUser } from "react-icons/fi";
 import Link from "next/link";
+import SignOutButton from "@/app/components/SignOutButton";
 
 export default async function Dashboard() {
     const session = await auth();
@@ -38,6 +39,7 @@ export default async function Dashboard() {
                         <FiUser className={styles.navIcon} />
                         <span>Посты</span>
                     </Link>
+                    <SignOutButton />
                 </nav>
             </div>
 
