@@ -28,7 +28,6 @@ export default function SinglePostPage() {
     const id = params?.id;
     const post = mockPosts.find((p) => p.id === Number(id));
 
-    // Получение комментариев из API при монтировании компонента
     useEffect(() => {
         if (id) {
             const fetchComments = async () => {
@@ -98,6 +97,7 @@ export default function SinglePostPage() {
                 <div className={styles.postMeta}>
                     <span className={styles.postDate}>{new Date().toLocaleDateString()}</span>
                     <span className={styles.readTime}>5 мин чтения</span>
+                    <span className={styles.postCategory}>Категория: {post.category}</span>
                 </div>
             </div>
 
@@ -107,9 +107,7 @@ export default function SinglePostPage() {
                 <p className={styles.body}>{post.body}</p>
 
                 <div className={styles.tags}>
-                    <span className={styles.tag}>#технологии</span>
-                    <span className={styles.tag}>#2025</span>
-                    <span className={styles.tag}>#тренды</span>
+                    <span className={styles.tag}>#{post.category.toLowerCase()}</span>
                 </div>
             </div>
 
@@ -174,8 +172,8 @@ export default function SinglePostPage() {
                                     <div>
                                         <span className={styles.commentAuthor}>{comment.author}</span>
                                         <span className={styles.commentDate}>
-                      {new Date(comment.createdAt).toLocaleString()}
-                    </span>
+                                            {new Date(comment.createdAt).toLocaleString()}
+                                        </span>
                                     </div>
                                 </div>
                                 <p className={styles.commentText}>{comment.text}</p>

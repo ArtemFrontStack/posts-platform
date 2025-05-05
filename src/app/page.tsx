@@ -1,3 +1,4 @@
+// src/app/page.tsx
 import { mockPosts } from "@/app/data/data";
 import PostCard from "@/app/components/PostCard";
 import AccountMenu from "@/app/components/AccountMenu";
@@ -8,17 +9,28 @@ interface Post {
     id: number;
     title: string;
     body: string;
+    category: string;
 }
 
 // Server component
-export default async function BlogPage({ searchParams }: { searchParams?: Promise<{ page?: string }> }) {
-    // Await searchParams to resolve the Promise
+export default async function BlogPage({
+                                           searchParams,
+                                       }: {
+    searchParams?: Promise<{ page?: string; category?: string }> ;
+}) {
     const resolvedSearchParams = await searchParams;
     const currentPage = Number(resolvedSearchParams?.page) || 1;
-    const postsPerPage = 5;
-    const totalPages = Math.ceil(mockPosts.length / postsPerPage);
+    const selectedCategory = resolvedSearchParams?.category || "";
 
-    const currentPosts = mockPosts.slice(
+    // Фильтрация постов по категории
+    const filteredPosts = selectedCategory
+        ? mockPosts.filter((post) => post.category === selectedCategory)
+        : mockPosts;
+
+    const postsPerPage = 5;
+    const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+
+    const currentPosts = filteredPosts.slice(
         (currentPage - 1) * postsPerPage,
         currentPage * postsPerPage
     );
@@ -29,15 +41,44 @@ export default async function BlogPage({ searchParams }: { searchParams?: Promis
                 <AccountMenu />
                 <Link className={styles.Button} href="/account">Профиль</Link>
             </div>
+
             <div className="w-full md:w-4/5">
+                {/* Категории фильтрации */}
+                <div className="flex flex-wrap gap-2 justify-center mb-4">
+                    {["все", "frontend", "бизнес", "безопасность"].map((cat) => (
+                        <Link
+                            key={cat}
+                            href={cat === "все" ? "/" : `/?category=${cat}`}
+                            className={`${styles.filterButton} ${
+                                selectedCategory === cat || (cat === "все" && !selectedCategory)
+                                    ? "active"
+                                    : ""
+                            }`}
+                        >
+                            {cat}
+                        </Link>
+                    ))}
+                </div>
+
+                {/* Текущий фильтр */}
+                {selectedCategory && (
+                    <p className="text-center text-gray-500 mb-4">
+                        Фильтр: {selectedCategory}
+                    </p>
+                )}
+
+                {/* Посты */}
                 {currentPosts.map((post: Post) => (
-                    <PostCard id={post.id} key={post.id} title={post.title} body={post.body} />
+                    <PostCard id={post.id} key={post.id} title={post.title} body={post.body} category={post.category} />
                 ))}
 
+                {/* Пагинация */}
                 <div className="flex flex-wrap justify-center items-center gap-4 my-8 text-white">
                     {currentPage > 1 ? (
                         <Link
-                            href={`?page=${currentPage - 1}`}
+                            href={`?page=${currentPage - 1}${
+                                selectedCategory ? `&category=${selectedCategory}` : ""
+                            }`}
                             className="px-4 py-2 rounded bg-red-500 hover:bg-red-600 transition-colors"
                         >
                             Назад
@@ -52,7 +93,9 @@ export default async function BlogPage({ searchParams }: { searchParams?: Promis
 
                     {currentPage < totalPages ? (
                         <Link
-                            href={`?page=${currentPage + 1}`}
+                            href={`?page=${currentPage + 1}${
+                                selectedCategory ? `&category=${selectedCategory}` : ""
+                            }`}
                             className="px-4 py-2 rounded bg-red-500 hover:bg-red-600 transition-colors"
                         >
                             Вперед
