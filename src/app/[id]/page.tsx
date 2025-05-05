@@ -5,7 +5,7 @@ import { mockPosts } from "@/app/data/data";
 import styles from './SinglePostPage.module.css';
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FiArrowLeft, FiMessageSquare, FiSend } from "react-icons/fi";
 
 interface Comment {
@@ -25,6 +25,23 @@ export default function SinglePostPage() {
 
     const id = params?.id;
     const post = mockPosts.find((p) => p.id === Number(id));
+
+    // Load comments from localStorage when component mounts
+    useEffect(() => {
+        if (id) {
+            const storedComments = localStorage.getItem(`comments_${id}`);
+            if (storedComments) {
+                setComments(JSON.parse(storedComments));
+            }
+        }
+    }, [id]);
+
+    // Save comments to localStorage whenever comments change
+    useEffect(() => {
+        if (id && comments.length > 0) {
+            localStorage.setItem(`comments_${id}`, JSON.stringify(comments));
+        }
+    }, [comments, id]);
 
     if (!post) {
         return <div className={styles.notFound}>Пост #{id} не найден</div>;
@@ -136,8 +153,8 @@ export default function SinglePostPage() {
                                     <div>
                                         <span className={styles.commentAuthor}>{comment.author}</span>
                                         <span className={styles.commentDate}>
-                      {new Date(comment.createdAt).toLocaleString()}
-                    </span>
+                                            {new Date(comment.createdAt).toLocaleString()}
+                                        </span>
                                     </div>
                                 </div>
                                 <p className={styles.commentText}>{comment.text}</p>
