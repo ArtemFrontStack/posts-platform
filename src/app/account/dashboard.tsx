@@ -2,7 +2,7 @@
 import { auth } from "@/auth";
 import AccountMenu from "@/app/components/AccountMenu";
 import styles from "./Dashboard.module.css";
-import { FiActivity, FiBookmark, FiUser, FiLogOut } from "react-icons/fi";
+import { FiActivity, FiBookmark, FiUser } from "react-icons/fi";
 import Link from "next/link";
 
 export default async function Dashboard() {
